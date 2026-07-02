@@ -71,4 +71,20 @@ public class ToolCallingController {
                 .call()
                 .content();
     }
+
+    @GetMapping("/plan-my-day/{prompt}")
+    public String planMyDay(@PathVariable String prompt) {
+        return chatClient.prompt(prompt)
+                .system(
+                        """
+                                You are a smart personal assistant.
+                                You have access to the tools for date/time, news, and weather information.
+                                Use whichever tools are necessary to provide the best answer to the user.
+                                Always give a helpful, well-organized response.
+                                """
+                )
+                .tools(dateTimeTool, newsTool, weatherTool)
+                .call()
+                .content();
+    }
 }
