@@ -2,6 +2,7 @@ package com.tool.calling.web;
 
 import com.tool.calling.tools.DateTimeTool;
 import com.tool.calling.tools.NewsTool;
+import com.tool.calling.tools.WeatherTool;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -26,12 +27,15 @@ public class ToolCallingController {
 
     private NewsTool newsTool;
 
-    public ToolCallingController(OpenAiChatModel openAiChatModel, ChatClient.Builder builder, DateTimeTool dateTimeTool, NewsTool newsTool) {
+    private WeatherTool weatherTool;
+
+    public ToolCallingController(OpenAiChatModel openAiChatModel, ChatClient.Builder builder, DateTimeTool dateTimeTool, NewsTool newsTool, WeatherTool weatherTool) {
         this.openAiChatModel = openAiChatModel;
         this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(memory).build())
                 .defaultAdvisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId)).build();
         this.dateTimeTool = dateTimeTool;
         this.newsTool = newsTool;
+        this.weatherTool = weatherTool;
     }
 
     @GetMapping("/info/{prompt}")
@@ -56,6 +60,14 @@ public class ToolCallingController {
     public String getInfo4(@PathVariable String prompt) {
         return chatClient.prompt(prompt)
                 .tools(dateTimeTool, newsTool)
+                .call()
+                .content();
+    }
+
+    @GetMapping("/weather/{prompt}")
+    public String getWeather(@PathVariable String prompt) {
+        return chatClient.prompt(prompt)
+                .tools(dateTimeTool, newsTool, weatherTool)
                 .call()
                 .content();
     }
