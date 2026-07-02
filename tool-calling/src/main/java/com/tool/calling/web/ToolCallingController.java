@@ -1,6 +1,7 @@
 package com.tool.calling.web;
 
 import com.tool.calling.tools.DateTimeTool;
+import com.tool.calling.tools.NewsTool;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -23,11 +24,14 @@ public class ToolCallingController {
 
     private DateTimeTool dateTimeTool;
 
-    public ToolCallingController(OpenAiChatModel openAiChatModel, ChatClient.Builder builder, DateTimeTool dateTimeTool) {
+    private NewsTool newsTool;
+
+    public ToolCallingController(OpenAiChatModel openAiChatModel, ChatClient.Builder builder, DateTimeTool dateTimeTool, NewsTool newsTool) {
         this.openAiChatModel = openAiChatModel;
         this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(memory).build())
                 .defaultAdvisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId)).build();
         this.dateTimeTool = dateTimeTool;
+        this.newsTool = newsTool;
     }
 
     @GetMapping("/info/{prompt}")
@@ -44,6 +48,14 @@ public class ToolCallingController {
     public String getInfo3(@PathVariable String prompt) {
         return chatClient.prompt(prompt)
                 .tools(dateTimeTool)
+                .call()
+                .content();
+    }
+
+    @GetMapping("/info4/{prompt}")
+    public String getInfo4(@PathVariable String prompt) {
+        return chatClient.prompt(prompt)
+                .tools(dateTimeTool, newsTool)
                 .call()
                 .content();
     }
