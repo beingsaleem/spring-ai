@@ -7,10 +7,12 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class ToolCallingController {
@@ -86,5 +88,27 @@ public class ToolCallingController {
                 .tools(dateTimeTool, newsTool, weatherTool)
                 .call()
                 .content();
+    }
+
+    @GetMapping("/recommend/movie/")
+    public String recommendMovie(@RequestParam String genre, @RequestParam String year, @RequestParam String language) {
+        String template = """
+                I want to watch a {type} movie tonight with good rating,\s
+                               looking  for movies around this year {year}.\s
+                               The  language im looking for is {lang}.
+                               Suggest one specific movie and tell me the cast and length of the movie.
+                
+                
+                               response format should be:
+                               1. Movie Name
+                               2. basic plot
+                               3. cast
+                               4. length
+                               5. IMDB rating
+                """;
+
+        PromptTemplate promptTemplate = new PromptTemplate(template);
+        Prompt prompt = promptTemplate.create(Map.of("type", genre, "year", year, "lang", language));
+        return chatClient.prompt(prompt).call().content();
     }
 }
