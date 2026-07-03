@@ -1,0 +1,2 @@
+### Tool Calling
+AI models don’t have access to real-time information. Any question that assumes awareness of information such as the current date or weather forecast cannot be answered by the model. However, we can provide a tool that can retrieve this information, and let the model call this tool when access to real-time information is needed.
