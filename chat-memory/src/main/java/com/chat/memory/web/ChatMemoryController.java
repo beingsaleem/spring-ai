@@ -19,7 +19,6 @@ public class ChatMemoryController {
     public ChatMemoryController(OpenAiChatModel model,
                                 JdbcChatMemoryRepository
                                         jdbcChatMemoryRepository) {
-        // Memory that stores/reads messages from the database
         ChatMemory chatMemory = MessageWindowChatMemory.builder()
                 .chatMemoryRepository(jdbcChatMemoryRepository)
                 .maxMessages(10)
@@ -32,7 +31,12 @@ public class ChatMemoryController {
                 .build();
     }
 
-    @GetMapping("/chat")
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+
+    @GetMapping("chat")
     public String chat(@RequestParam String userId,
                        @RequestParam String prompt) {
         return chatClient.prompt(prompt)
