@@ -22,6 +22,7 @@ public class CourseSearchTool {
     @Tool(name = "searchCourse", description = "Search the course catalog for courses matching a topic, technology or skill")
     public String searchCourse(
             @ToolParam(description = "the topic to search for, like Java, AI, DevOps") String topic) {
+        System.out.println("Searching for courses matching topic: " + topic);
         List<Document> documents = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(topic)
